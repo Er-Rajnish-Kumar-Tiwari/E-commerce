@@ -1,6 +1,7 @@
 const user = require("../Models/userModels");
 const crypto=require("crypto"); 
 const nodemailer=require("nodemailer");
+const jwt=require("jsonwebtoken");
 
 
 const sendVerificationEmail = (email, token) => {
@@ -94,16 +95,20 @@ const loginUser=async (req, res) => {
         }
 
         const foundUser = await user.findOne({ email });
+
         if (!foundUser) {
             return res.status(400).json({ message: "user not authorized" });
         }
-
-        const isMatch = await foundUser.comparePassword(password);
-        if (!isMatch) {
+        if (!foundUser.verified) {
+            return res.status(400).json({ message: "Email not verified" });
+        }
+        if (foundUser.password !== password) {
             return res.status(400).json({ message: "Invalid password" });
         }
 
-        res.status(200).json({ message: "Login successful" });
+        const token=jwt.sign({ userId: foundUser._id }, process.env.JWT_SECRET);
+
+        res.status(200).json({ message: "Login successful", token });
     } 
     catch (error) {
        console.error("Error in loginUser:", error.message);
