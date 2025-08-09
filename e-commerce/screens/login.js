@@ -14,6 +14,9 @@ import logo from "../assets/logo.png";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import Foundation from "@expo/vector-icons/Foundation";
 import { useNavigation } from "@react-navigation/native";
+import axios from "axios";
+import { showMessage } from "react-native-flash-message";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -21,7 +24,30 @@ const Login = () => {
   const navigation = useNavigation();
 
   const handleLogin = () => {
-    
+    const user = { email, password };
+
+    axios
+      .post(`${process.env.BASE_URL}/api/users/login`, user)
+      .then((response) => {
+        const { token } = response.data;
+        // Save the token and navigate to the home screen
+        AsyncStorage.setItem("token", token);
+
+        showMessage({
+          message: "Login successful",
+          description: response.data.message,
+          type: "success",
+        });
+        setEmail("");
+        setPassword("");
+        navigation.navigate("Home");
+      })
+      .catch((error) => {
+        showMessage({
+          message: error.response.data.message,
+          type: "danger",
+        });
+      });
   };
 
   return (
@@ -96,19 +122,45 @@ const Login = () => {
             />
           </View>
 
-          <View style={{flexDirection: "row", justifyContent: "space-between", marginTop: 25, width: 300}}>
-            <Text style={{color: "gray"}}>Keep me logged in</Text>
-            <Text style={{color: "blue",cursor:"pointer",fontWeight:"400"}}>Forgot Password?</Text>
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "space-between",
+              marginTop: 25,
+              width: 300,
+            }}
+          >
+            <Text style={{ color: "gray" }}>Keep me logged in</Text>
+            <Text
+              style={{ color: "blue", cursor: "pointer", fontWeight: "400" }}
+            >
+              Forgot Password?
+            </Text>
           </View>
 
-          <Pressable style={{ backgroundColor: "#FF6B6B", padding: 15, borderRadius: 5, alignItems: "center", marginTop: 60 }} onPress={handleLogin}>
+          <Pressable
+            style={{
+              backgroundColor: "#FF6B6B",
+              padding: 15,
+              borderRadius: 5,
+              alignItems: "center",
+              marginTop: 60,
+            }}
+            onPress={handleLogin}
+          >
             <Text style={{ color: "white", fontWeight: "bold" }}>Login</Text>
           </Pressable>
 
-          <Pressable style={{ marginTop: 10,alignItems:"center" }} onPress={() => navigation.navigate("Register")}>
-            <Text style={{ color: "blue", cursor: "pointer", fontWeight: "50" }}>Don't have an account? Sign up</Text>
+          <Pressable
+            style={{ marginTop: 10, alignItems: "center" }}
+            onPress={() => navigation.navigate("Register")}
+          >
+            <Text
+              style={{ color: "blue", cursor: "pointer", fontWeight: "50" }}
+            >
+              Don't have an account? Sign up
+            </Text>
           </Pressable>
-
         </View>
       </KeyboardAvoidingView>
     </SafeAreaView>
