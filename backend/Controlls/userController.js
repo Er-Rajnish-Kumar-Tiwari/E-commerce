@@ -7,15 +7,15 @@ const sendVerificationEmail = (email, token) => {
     const transporter = nodemailer.createTransport({
         service: "gmail",
         auth: {
-            user: process.env.EMAIL,
-            pass: process.env.EMAIL_PASSWORD,
+            user: process.env.Email,
+            pass: process.env.Email_Password,
         },
     });
 
     const verifyUrl = `${process.env.BASE_URL}/api/users/verify/${token}`;
 
     const mailOptions = {
-        from: process.env.EMAIL,
+        from: "Tanishzon.com",
         to: email,
         subject: "Email Verification",
         html: `
