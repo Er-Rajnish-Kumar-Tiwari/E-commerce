@@ -1,5 +1,6 @@
 import {
   Alert,
+  ActivityIndicator, // <-- import this
   Image,
   KeyboardAvoidingView,
   Platform,
@@ -22,15 +23,13 @@ const Register = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
+  const [loading, setLoading] = useState(false); // <-- loading state
   const navigation = useNavigation();
 
   const handleRegister = () => {
-    const user = {
-      name,
-      email,
-      password,
-    };
-    // Send user data to backend API for registration
+    setLoading(true); // start loading
+    const user = { name, email, password };
+
     axios
       .post("https://e-commerce-fj9h.onrender.com/api/users/register", user, {
         headers: { "Content-Type": "application/json" },
@@ -44,14 +43,11 @@ const Register = () => {
         setName("");
         setEmail("");
         setPassword("");
-        // Navigate to the login screen or show a success message
         navigation.navigate("Login");
       })
       .catch((error) => {
         if (error.response) {
           console.log("Error data:", error.response.data);
-          console.log("Status:", error.response.status);
-          console.log("Headers:", error.response.headers);
           showMessage({
             message: "Registration error",
             description: error.response.data.message || "Unknown error",
@@ -65,6 +61,9 @@ const Register = () => {
             type: "danger",
           });
         }
+      })
+      .finally(() => {
+        setLoading(false); // stop loading in both success & error cases
       });
   };
 
@@ -82,17 +81,8 @@ const Register = () => {
         </View>
 
         <View style={{ marginTop: 30 }}>
-          <View
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              backgroundColor: "#DDDDDD",
-              paddingVertical: 1,
-              borderRadius: 5,
-              marginTop: 30,
-              gap: 7,
-            }}
-          >
+          {/* Name input */}
+          <View style={styles.inputContainer}>
             <MaterialIcons
               name="person"
               size={24}
@@ -101,27 +91,14 @@ const Register = () => {
             />
             <TextInput
               placeholder="Enter your name"
-              style={{ color: "black", marginVertical: 2, width: 280 }}
-              keyboardType="default"
-              autoCapitalize="words"
-              autoCorrect={false}
-              textContentType="name"
+              style={styles.input}
               value={name}
-              onChangeText={(text) => setName(text)}
+              onChangeText={setName}
             />
           </View>
 
-          <View
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              backgroundColor: "#DDDDDD",
-              paddingVertical: 1,
-              borderRadius: 5,
-              marginTop: 30,
-              gap: 7,
-            }}
-          >
+          {/* Email input */}
+          <View style={styles.inputContainer}>
             <MaterialIcons
               name="email"
               size={24}
@@ -130,27 +107,16 @@ const Register = () => {
             />
             <TextInput
               placeholder="Enter your email"
-              style={{ color: "black", marginVertical: 2, width: 280 }}
+              style={styles.input}
               keyboardType="email-address"
               autoCapitalize="none"
-              autoCorrect={false}
-              textContentType="emailAddress"
               value={email}
-              onChangeText={(text) => setEmail(text)}
+              onChangeText={setEmail}
             />
           </View>
 
-          <View
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              backgroundColor: "#DDDDDD",
-              paddingVertical: 1,
-              borderRadius: 5,
-              marginTop: 30,
-              gap: 7,
-            }}
-          >
+          {/* Password input */}
+          <View style={styles.inputContainer}>
             <Foundation
               name="lock"
               size={24}
@@ -159,52 +125,34 @@ const Register = () => {
             />
             <TextInput
               placeholder="Enter your password"
-              style={{ color: "black", marginVertical: 2, width: 280 }}
+              style={styles.input}
               secureTextEntry={true}
               autoCapitalize="none"
-              autoCorrect={false}
-              textContentType="password"
               value={password}
-              onChangeText={(text) => setPassword(text)}
+              onChangeText={setPassword}
             />
           </View>
 
-          <View
-            style={{
-              flexDirection: "row",
-              justifyContent: "space-between",
-              marginTop: 25,
-              width: 300,
-            }}
-          >
-            <Text style={{ color: "gray" }}>Keep me logged in</Text>
-            <Text
-              style={{ color: "blue", cursor: "pointer", fontWeight: "400" }}
-            >
-              Forgot Password?
-            </Text>
-          </View>
-
-          <Pressable
-            style={{
-              backgroundColor: "#FF6B6B",
-              padding: 15,
-              borderRadius: 5,
-              alignItems: "center",
-              marginTop: 60,
-            }}
-            onPress={handleRegister}
-          >
-            <Text style={{ color: "white", fontWeight: "bold" }}>Register</Text>
-          </Pressable>
+          {/* Loading indicator or button */}
+          {loading ? (
+            <ActivityIndicator
+              size="large"
+              color="#FF6B6B"
+              style={{ marginTop: 50 }}
+            />
+          ) : (
+            <Pressable style={styles.registerButton} onPress={handleRegister}>
+              <Text style={{ color: "white", fontWeight: "bold" }}>
+                Register
+              </Text>
+            </Pressable>
+          )}
 
           <Pressable
             style={{ marginTop: 10, alignItems: "center" }}
             onPress={() => navigation.navigate("Login")}
           >
-            <Text
-              style={{ color: "blue", cursor: "pointer", fontWeight: "50" }}
-            >
+            <Text style={{ color: "blue", fontWeight: "400" }}>
               Already have an account? Login
             </Text>
           </Pressable>
@@ -233,5 +181,26 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginTop: 12,
     color: "#041E42",
+  },
+  inputContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#DDDDDD",
+    paddingVertical: 1,
+    borderRadius: 5,
+    marginTop: 30,
+    gap: 7,
+  },
+  input: {
+    color: "black",
+    marginVertical: 2,
+    width: 280,
+  },
+  registerButton: {
+    backgroundColor: "#FF6B6B",
+    padding: 15,
+    borderRadius: 5,
+    alignItems: "center",
+    marginTop: 60,
   },
 });

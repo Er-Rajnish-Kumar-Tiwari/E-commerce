@@ -8,8 +8,9 @@ import {
   Text,
   TextInput,
   View,
+  ActivityIndicator, //  Added
 } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import logo from "../assets/logo.png";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import Foundation from "@expo/vector-icons/Foundation";
@@ -21,16 +22,27 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false); //  Loading state
   const navigation = useNavigation();
 
+  useEffect(()=>{
+    const checkLogin = async () => {
+      const token = await AsyncStorage.getItem("token");
+      if (token) {
+        navigation.navigate("Main");
+      }
+    };
+    checkLogin();
+  },[]);
+
   const handleLogin = () => {
+    setLoading(true); //  Start loading
     const user = { email, password };
 
     axios
-      .post(`${process.env.BASE_URL}/api/users/login`, user)
+      .post(`https://e-commerce-fj9h.onrender.com/api/users/login`, user)
       .then((response) => {
         const { token } = response.data;
-        // Save the token and navigate to the home screen
         AsyncStorage.setItem("token", token);
 
         showMessage({
@@ -40,13 +52,16 @@ const Login = () => {
         });
         setEmail("");
         setPassword("");
-        navigation.navigate("Home");
+        navigation.navigate("Main");
       })
       .catch((error) => {
         showMessage({
-          message: error.response.data.message,
+          message: error.response?.data?.message || "Login failed",
           type: "danger",
         });
+      })
+      .finally(() => {
+        setLoading(false); //  Stop loading
       });
   };
 
@@ -64,17 +79,8 @@ const Login = () => {
         </View>
 
         <View style={{ marginTop: 30 }}>
-          <View
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              backgroundColor: "#DDDDDD",
-              paddingVertical: 1,
-              borderRadius: 5,
-              marginTop: 30,
-              gap: 7,
-            }}
-          >
+          {/* Email Input */}
+          <View style={styles.inputWrapper}>
             <MaterialIcons
               name="email"
               size={24}
@@ -83,7 +89,7 @@ const Login = () => {
             />
             <TextInput
               placeholder="Enter your email"
-              style={{ color: "black", marginVertical: 2, width: 280 }}
+              style={styles.input}
               keyboardType="email-address"
               autoCapitalize="none"
               autoCorrect={false}
@@ -93,17 +99,8 @@ const Login = () => {
             />
           </View>
 
-          <View
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              backgroundColor: "#DDDDDD",
-              paddingVertical: 1,
-              borderRadius: 5,
-              marginTop: 30,
-              gap: 7,
-            }}
-          >
+          {/* Password Input */}
+          <View style={styles.inputWrapper}>
             <Foundation
               name="lock"
               size={24}
@@ -112,7 +109,7 @@ const Login = () => {
             />
             <TextInput
               placeholder="Enter your password"
-              style={{ color: "black", marginVertical: 2, width: 280 }}
+              style={styles.input}
               secureTextEntry={true}
               autoCapitalize="none"
               autoCorrect={false}
@@ -122,22 +119,15 @@ const Login = () => {
             />
           </View>
 
-          <View
-            style={{
-              flexDirection: "row",
-              justifyContent: "space-between",
-              marginTop: 25,
-              width: 300,
-            }}
-          >
+          {/* Keep Me Logged In */}
+          <View style={styles.rememberRow}>
             <Text style={{ color: "gray" }}>Keep me logged in</Text>
-            <Text
-              style={{ color: "blue", cursor: "pointer", fontWeight: "400" }}
-            >
+            <Text style={{ color: "blue", fontWeight: "400" }}>
               Forgot Password?
             </Text>
           </View>
 
+          {/* Login Button */}
           <Pressable
             style={{
               backgroundColor: "#FF6B6B",
@@ -145,19 +135,25 @@ const Login = () => {
               borderRadius: 5,
               alignItems: "center",
               marginTop: 60,
+              flexDirection: "row",
+              justifyContent: "center",
             }}
             onPress={handleLogin}
+            disabled={loading} //  Disable when loading
           >
-            <Text style={{ color: "white", fontWeight: "bold" }}>Login</Text>
+            {loading ? (
+              <ActivityIndicator color="#fff" /> //  Spinner
+            ) : (
+              <Text style={{ color: "white", fontWeight: "bold" }}>Login</Text>
+            )}
           </Pressable>
 
+          {/* Register Link */}
           <Pressable
             style={{ marginTop: 10, alignItems: "center" }}
             onPress={() => navigation.navigate("Register")}
           >
-            <Text
-              style={{ color: "blue", cursor: "pointer", fontWeight: "50" }}
-            >
+            <Text style={{ color: "blue" }}>
               Don't have an account? Sign up
             </Text>
           </Pressable>
@@ -186,5 +182,25 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginTop: 12,
     color: "#041E42",
+  },
+  inputWrapper: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#DDDDDD",
+    paddingVertical: 1,
+    borderRadius: 5,
+    marginTop: 30,
+    gap: 7,
+  },
+  input: {
+    color: "black",
+    marginVertical: 2,
+    width: 280,
+  },
+  rememberRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginTop: 25,
+    width: 300,
   },
 });
