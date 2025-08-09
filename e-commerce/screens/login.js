@@ -20,6 +20,10 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const navigation = useNavigation();
 
+  const handleLogin = () => {
+    
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <View>
@@ -97,7 +101,7 @@ const Login = () => {
             <Text style={{color: "blue",cursor:"pointer",fontWeight:"400"}}>Forgot Password?</Text>
           </View>
 
-          <Pressable style={{ backgroundColor: "#FF6B6B", padding: 15, borderRadius: 5, alignItems: "center", marginTop: 60 }}>
+          <Pressable style={{ backgroundColor: "#FF6B6B", padding: 15, borderRadius: 5, alignItems: "center", marginTop: 60 }} onPress={handleLogin}>
             <Text style={{ color: "white", fontWeight: "bold" }}>Login</Text>
           </Pressable>
 

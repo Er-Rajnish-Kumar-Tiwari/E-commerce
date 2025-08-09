@@ -15,7 +15,8 @@ import logo from "../assets/logo.png";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import Foundation from "@expo/vector-icons/Foundation";
 import { useNavigation } from "@react-navigation/native";
-import axios from 'axios';
+import axios from "axios";
+import { showMessage } from "react-native-flash-message";
 
 const Register = () => {
   const [email, setEmail] = useState("");
@@ -30,9 +31,16 @@ const Register = () => {
       password,
     };
     // Send user data to backend API for registration
-    axios.post("http://localhost:2000/api/users/register", user)
+    axios
+      .post("https://e-commerce-fj9h.onrender.com/api/users/register", user, {
+        headers: { "Content-Type": "application/json" },
+      })
       .then((response) => {
-       Alert.alert("Registration successful:", response.data);
+        showMessage({
+          message: "Registration successful",
+          description: response.data.message,
+          type: "success",
+        });
         setName("");
         setEmail("");
         setPassword("");
@@ -40,8 +48,23 @@ const Register = () => {
         navigation.navigate("Login");
       })
       .catch((error) => {
-        Alert.alert("Registration error:", error.message);
-        // Show an error message to the user
+        if (error.response) {
+          console.log("Error data:", error.response.data);
+          console.log("Status:", error.response.status);
+          console.log("Headers:", error.response.headers);
+          showMessage({
+            message: "Registration error",
+            description: error.response.data.message || "Unknown error",
+            type: "danger",
+          });
+        } else {
+          showMessage({
+            message: "Registration failed",
+            description:
+              "An error occurred while registering. Please try again.",
+            type: "danger",
+          });
+        }
       });
   };
 
@@ -175,7 +198,10 @@ const Register = () => {
             <Text style={{ color: "white", fontWeight: "bold" }}>Register</Text>
           </Pressable>
 
-          <Pressable style={{ marginTop: 10, alignItems: "center" }} onPress={() => navigation.navigate("Login")}>
+          <Pressable
+            style={{ marginTop: 10, alignItems: "center" }}
+            onPress={() => navigation.navigate("Login")}
+          >
             <Text
               style={{ color: "blue", cursor: "pointer", fontWeight: "50" }}
             >
