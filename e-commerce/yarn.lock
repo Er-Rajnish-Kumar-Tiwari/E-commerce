@@ -4270,6 +4270,11 @@ react-native-is-edge-to-edge@1.1.7:
   resolved "https://registry.npmjs.org/react-native-is-edge-to-edge/-/react-native-is-edge-to-edge-1.1.7.tgz"
   integrity sha512-EH6i7E8epJGIcu7KpfXYXiV2JFIYITtq+rVS8uEb+92naMRBdxhTuS8Wn2Q7j9sqyO0B+Xbaaf9VdipIAmGW4w==
 
+react-native-models@^0.7.9:
+  version "0.7.9"
+  resolved "https://registry.npmjs.org/react-native-models/-/react-native-models-0.7.9.tgz"
+  integrity sha512-9v5CXGv5vQ3HnsRs0OP1+ECSa+YiweEMMLnHQiGIglwiJML9GIMtz3pU14CLF6gEc1hlUgZe1LHyQJSyqpTrfg==
+
 react-native-reanimated@>=3.6.2, react-native-reanimated@~3.17.4:
   version "3.17.5"
   resolved "https://registry.npmjs.org/react-native-reanimated/-/react-native-reanimated-3.17.5.tgz"
