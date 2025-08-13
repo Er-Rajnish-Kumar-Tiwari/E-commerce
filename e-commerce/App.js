@@ -1,13 +1,16 @@
-import { Text, View } from "react-native";
-import "./global.css";
+import React from "react";
+import { Provider } from "react-redux";
 import StackNavigator from "./navigation/stackNavigator";
-import FlashMessage, { showMessage } from "react-native-flash-message";
+import FlashMessage from "react-native-flash-message";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 
 export default function App() {
   return (
-    <>
-      <StackNavigator />
-      <FlashMessage position="top" />
-    </>
+    <Provider store={store}>
+      <SafeAreaProvider>
+        <StackNavigator />
+        <FlashMessage position="top" />
+      </SafeAreaProvider>
+    </Provider>
   );
 }

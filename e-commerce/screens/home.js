@@ -18,6 +18,8 @@ import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import Swiper from "react-native-swiper";
 import { useNavigation } from "@react-navigation/native";
 import DropDownPicker from "react-native-dropdown-picker";
+import Products from "../components/products";
+import axios from "axios";
 
 const Home = () => {
   const list = [
@@ -438,6 +440,12 @@ const Home = () => {
             marginTop: 15,
           }}
         />
+
+        <View>
+          {products.map((item, index) => {
+            return <Products key={index} item={item} />;
+          })}
+        </View>
         
       </ScrollView>
     </SafeAreaView>
