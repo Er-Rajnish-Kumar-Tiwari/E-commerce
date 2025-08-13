@@ -10,6 +10,7 @@ import Entypo from '@expo/vector-icons/Entypo';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+import ProductInfo from "../screens/ProductInfo";
 
 
 
@@ -40,6 +41,7 @@ const StackNavigator = () => {
         <Stack.Screen name="Login" component={Login} options={{headerShown:false}}/>
         <Stack.Screen name="Register" component={Register} options={{headerShown:false}}/>
         <Stack.Screen name="Main" component={BottomTab} options={{headerShown:false}}/>
+        <Stack.Screen name="Info" component={ProductInfo} options={{headerShown:false}}/>
       </Stack.Navigator>
     </NavigationContainer>
   );

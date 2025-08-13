@@ -9,7 +9,7 @@ import {
   Text,
   Image,
 } from "react-native";
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect, useCallback, useContext } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import Feather from "@expo/vector-icons/Feather";
@@ -20,6 +20,7 @@ import { useNavigation } from "@react-navigation/native";
 import DropDownPicker from "react-native-dropdown-picker";
 import Products from "../components/products";
 import axios from "axios";
+import { useSelector } from "react-redux";
 
 const Home = () => {
   const list = [
@@ -197,6 +198,24 @@ const Home = () => {
 
   const [products, setProducts] = useState([]);
   const navigation = useNavigation();
+  const [open, setOpen] = useState(false);
+  const [addresses, setAddresses] = useState([]);
+  const [category, setCategory] = useState("jewelery");
+  const [selectedAddress, setSelectedAdress] = useState("");
+  const [modalVisible, setModalVisible] = useState(false);
+
+  const [items, setItems] = useState([
+    { label: "Men's clothing", value: "men's clothing" },
+    { label: "jewelery", value: "jewelery" },
+    { label: "electronics", value: "electronics" },
+    { label: "women's clothing", value: "women's clothing" },
+  ]);
+
+  const onGenderOpen = useCallback(() => {
+    setCompanyOpen(false);
+  }, []);
+
+  const cart = useSelector((state) => state.cart.cart);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -243,7 +262,7 @@ const Home = () => {
           >
             <AntDesign name="search1" size={20} color="black" />
             <TextInput
-              placeholder="Search tanishzon.in"
+              placeholder="Search Tanishzon.in"
               style={{ flex: 1, marginLeft: 8 }}
             />
           </Pressable>
@@ -441,12 +460,49 @@ const Home = () => {
           }}
         />
 
-        <View>
-          {products.map((item, index) => {
-            return <Products key={index} item={item} />;
-          })}
+        <View
+          style={{
+            marginHorizontal: 10,
+            marginTop: 20,
+            width: "45%",
+            marginBottom: open ? 50 : 15,
+          }}
+        >
+          <DropDownPicker
+            style={{
+              borderColor: "#B7B7B7",
+              height: 30,
+              marginBottom: open ? 120 : 15,
+            }}
+            open={open}
+            value={category} //genderValue
+            items={items}
+            setOpen={setOpen}
+            setValue={setCategory}
+            setItems={setItems}
+            placeholder="choose category"
+            placeholderStyle={styles.placeholderStyles}
+            onOpen={onGenderOpen}
+            // onChangeValue={onChange}
+            zIndex={3000}
+            zIndexInverse={1000}
+          />
         </View>
-        
+
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            flexWrap: "wrap",
+          }}
+        >
+          {products
+            ?.filter((item) => item.category === category)
+            .map((item, index) => (
+              <Products item={item} key={index} />
+            ))}
+        </View>
+
       </ScrollView>
     </SafeAreaView>
   );
